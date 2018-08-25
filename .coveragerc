@@ -1,0 +1,8 @@
+[run]
+branch = False
+
+[report]
+fail_under = 10
+
+[html]
+directory = htmlcov
