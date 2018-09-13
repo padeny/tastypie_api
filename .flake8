@@ -1,0 +1,14 @@
+[flake8]
+#ignore = C901,E402,W,E501
+exclude =
+    *.pyc,
+    .git,
+    __pycache__,
+    *.md,
+
+max-line-length=119
+max-complexity=15
+format=pylint
+show_source = True
+statistics = True
+count = True

@@ -78,11 +78,11 @@ class HttpNotModified(HttpResponse):
     res_code = 304
 
 
-class HttpBadRequest(HttpResponse):
+class HttpBadRequest(FailedResult):
     res_code = 400
 
 
-class HttpUnauthorized(HttpResponse):
+class HttpUnauthorized(FailedResult):
     res_code = 401
 
 
@@ -90,31 +90,31 @@ class HttpForbidden(FailedResult):
     res_code = 403
 
 
-class HttpNotFound(HttpResponse):
+class HttpNotFound(FailedResult):
     res_code = 404
 
 
-class HttpMethodNotAllowed(HttpResponse):
+class HttpMethodNotAllowed(FailedResult):
     res_code = 405
 
 
-class HttpConflict(HttpResponse):
+class HttpConflict(FailedResult):
     res_code = 409
 
 
-class HttpGone(HttpResponse):
+class HttpGone(FailedResult):
     res_code = 410
 
 
-class HttpUnprocessableEntity(HttpResponse):
+class HttpUnprocessableEntity(FailedResult):
     res_code = 422
 
 
-class HttpTooManyRequests(HttpResponse):
+class HttpTooManyRequests(FailedResult):
     res_code = 429
 
 
-class HttpApplicationError(HttpResponse):
+class HttpApplicationError(FailedResult):
     res_code = 500
 
 

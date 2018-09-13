@@ -140,6 +140,8 @@ class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResou
         if not format:
             format = request.META.get('CONTENT_TYPE', 'application/json')
 
+        format = format.split(';')[0]
+
         if format == 'application/x-www-form-urlencoded':
             return request.POST
 
