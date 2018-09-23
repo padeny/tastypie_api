@@ -1,8 +1,7 @@
 import json
 from django.db.utils import IntegrityError
 
-from tastypie.resources import Resource as Resource
-from tastypie.resources import BaseModelResource, ModelDeclarativeMetaclass
+from tastypie.resources import Resource, DeclarativeMetaclass, BaseModelResource, ModelDeclarativeMetaclass
 
 from django.core.exceptions import (
     ObjectDoesNotExist, MultipleObjectsReturned, ValidationError,
@@ -34,7 +33,7 @@ def sanitize(text):
     return escape(text).replace('&#39;', "'").replace('&quot;', '"')
 
 
-class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResource)):
+class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
     """
     #TODO
     1.checkparam
@@ -101,16 +100,9 @@ class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResou
 
         return wrapper
 
-    def _build_reverse_url(self, name, args=None, kwargs=None):
-        """
-        A ModelResource subclass that respects Django namespaces.
-        """
-        namespaced = "%s:%s" % (self._meta.urlconf_namespace, name)
-        return reverse(namespaced, args=args, kwargs=kwargs)
-
     def save(self, bundle, skip_errors=False):
         try:
-            return super(ModelResource, self).save(bundle, skip_errors=skip_errors)
+            return super(Resource, self).save(bundle, skip_errors=skip_errors)
         except IntegrityError as e:
             raise DataFormatError(msg=str(e))
 
@@ -149,7 +141,7 @@ class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResou
             data = request.POST.copy()
             data.update(request.FILES)
             return data
-        return super(ModelResource, self).deserialize(request, data, format)
+        return super(Resource, self).deserialize(request, data, format)
 
     def create_response(self, request, data, **kwargs):
         """
@@ -162,3 +154,19 @@ class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResou
            isinstance(deserialized[self._meta.collection_name], list):
             return Result(meta=deserialized['meta'], data=deserialized[self._meta.collection_name])
         return Result(data=deserialized)
+
+
+class BaseModelResource(BaseModelResource, Resource):
+    pass
+
+
+class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResource)):
+    
+    def _build_reverse_url(self, name, args=None, kwargs=None):
+        """
+        A ModelResource subclass that respects Django namespaces.
+        """
+        namespaced = "%s:%s" % (self._meta.urlconf_namespace, name)
+        return reverse(namespaced, args=args, kwargs=kwargs)
+
+    

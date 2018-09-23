@@ -1,0 +1,24 @@
+image: "python:3.6-alpine"
+stages:
+    - test
+    - pep8
+
+before_script:
+    - pip install -q --no-cache-dir -i https://pypi.doubanio.com/simple -r requirements.txt
+
+test:
+    stage: test
+    script:
+        # --omit 排除对指定文件的测试  --source指定要扫描的文件
+        # - coverage run --omit='*/__init__.py' --source='.' manage.py test
+        - coverage run runtests.py
+        - coverage report
+
+pep8:
+    stage: pep8
+    script:
+        # - python -m flake8 './src/mathartsys/tests' './src/mathartsys/db_model' './src/mathartsys/model/gps' './src/mathartsys/model/running_rate'
+        - python -m flake8 '.' --exclude */migrations
+    allow_failure: true
+
+
