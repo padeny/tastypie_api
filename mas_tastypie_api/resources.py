@@ -4,7 +4,9 @@ from django.db.utils import IntegrityError
 from tastypie.resources import Resource, DeclarativeMetaclass, BaseModelResource, ModelDeclarativeMetaclass
 
 from django.core.exceptions import (
-    ObjectDoesNotExist, MultipleObjectsReturned, ValidationError,
+    ObjectDoesNotExist,
+    MultipleObjectsReturned,
+    ValidationError,
 )
 from django.conf import settings
 from django.utils import six
@@ -12,16 +14,27 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.utils.cache import patch_cache_control, patch_vary_headers
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
-from tastypie.utils.mime import determine_format, build_content_type
 
+from tastypie.utils.mime import determine_format, build_content_type
 from tastypie import fields
 from tastypie.resources import ResourceOptions as TResourceOptions
-from tastypie.exceptions import BadRequest
+from tastypie.exceptions import (
+    NotFound,
+    BadRequest,
+    InvalidFilterError,
+    HydrationError,
+    InvalidSortError,
+    ImmediateHttpResponse,
+    Unauthorized,
+    UnsupportedFormat,
+    UnsupportedSerializationFormat,
+    UnsupportedDeserializationFormat,
+)
 from tastypie.compat import NoReverseMatch, reverse, Resolver404, get_script_prefix
-
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie import http as t_http
 
-#from mas_tastypie_api import http
+from mas_tastypie_api import http
 from mas_tastypie_api.http import FailedResult, Result
 from mas_tastypie_api.exceptions import DataFormatError
 from mas_tastypie_api.serializers import Serializer
@@ -42,6 +55,7 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
   √ 4.union response-format,e.g Result or FailedResult
     5.overwrite wrap_view() to return union response-format for some Exception
     """
+
     # class Meta:
     #     #serializer = Serializer()
     #     object_class = None
@@ -51,7 +65,6 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
         def wrapper(request, *args, **kwargs):
             try:
                 callback = getattr(self, view)
-                # import pdb;pdb.set_trace()
                 response = callback(request, *args, **kwargs)
 
                 varies = getattr(self._meta.cache, "varies", [])
@@ -65,32 +78,28 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
 
                 if request.is_ajax() and not response.has_header("Cache-Control"):
                     patch_cache_control(response, no_cache=True)
-                return response
-            #=========except custome exception=========
+                return self.get_custome_response_class(response)
+            # =========except custome exception=========
             except DataFormatError as e:
                 return FailedResult(msg=e.msg)
-            #==========================================
+            # ==========================================
             except (BadRequest, fields.ApiFieldError) as e:
                 # data = {"error": sanitize(e.args[0]) if getattr(e, 'args') else ''}
-                #=========except custome exception=========
+                # =========except custome exception=========
                 return FailedResult(msg=sanitize(e.args[0]) if getattr(e, 'args') else '')
                 # return self.error_response(request, data, response_class=http.HttpBadRequest)
-                #==========================================
+                # ==========================================
             except ValidationError as e:
                 # data = {"error": sanitize(e.messages)}
-                #=========except custome exception=========
+                # =========except custome exception=========
                 return FailedResult(msg=sanitize(e.messages))
                 # return self.error_response(request, data, response_class=http.HttpBadRequest)
-                #==========================================
+                # ==========================================
             except Exception as e:
                 if hasattr(e, 'response') and isinstance(e.response, HttpResponse):
-                    #=========except custome exception=========
-                    # try:
-                    #     tmp = json.loads(e.response.content)
-                    #     return FailedResult(msg=tmp)
-                    # except Exception:
-                        return e.response
-                    #==========================================
+                    # =========except custome exception=========
+                    return self.get_custome_response_class(e.response)
+                # ==========================================
 
                 if settings.DEBUG and getattr(settings, 'TASTYPIE_FULL_DEBUG', False):
                     raise
@@ -99,6 +108,36 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
                 return self._handle_500(request, e)
 
         return wrapper
+
+    def get_custome_response_class(self, response):
+        """
+        Can be overridden to customize response classes.
+        Should always return a subclass of ``django.http.HttpResponse``.
+        """
+        if isinstance(response, (t_http.HttpCreated, t_http.HttpAccepted, t_http.HttpNoContent)):
+            return http.Result()
+        elif response.status_code > 299:
+            msg = response.content.decode() if response.content else None
+            return http.FailedResult(msg=msg, status=response.status_code)
+        else:
+            return response
+
+    def get_response_class_for_exception(self, request, exception):
+        """
+        Can be overridden to customize response classes used for uncaught
+        exceptions. Should always return a subclass of
+        ``django.http.HttpResponse``.
+        """
+        if isinstance(exception, (NotFound, ObjectDoesNotExist, Http404)):
+            return http.HttpNotFound
+        elif isinstance(exception, UnsupportedSerializationFormat):
+            return http.HttpNotAcceptable
+        elif isinstance(exception, UnsupportedDeserializationFormat):
+            return http.HttpUnsupportedMediaType
+        elif isinstance(exception, UnsupportedFormat):
+            return http.HttpBadRequest
+
+        return http.HttpApplicationError
 
     def save(self, bundle, skip_errors=False):
         try:
@@ -119,10 +158,10 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
         errors = self._meta.validation.is_valid(bundle, bundle.request)
 
         if errors:
-            #=========except custome exception=========
+            # =========except custome exception=========
             # bundle.errors[self._meta.resource_name] = errors
             bundle.errors = errors
-            #========================================
+            # ========================================
             return False
 
         return True
@@ -161,12 +200,9 @@ class BaseModelResource(BaseModelResource, Resource):
 
 
 class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResource)):
-    
     def _build_reverse_url(self, name, args=None, kwargs=None):
         """
         A ModelResource subclass that respects Django namespaces.
         """
         namespaced = "%s:%s" % (self._meta.urlconf_namespace, name)
         return reverse(namespaced, args=args, kwargs=kwargs)
-
-    

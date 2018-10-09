@@ -1,14 +1,18 @@
-#!/usr/bin/env python
 import sys
+import os
 
 from django.conf import settings
 from django.core.management import execute_from_command_line
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 if not settings.configured:
     settings.configure(
         DATABASES={
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
             }
         },
         INSTALLED_APPS=[
@@ -34,13 +38,21 @@ if not settings.configured:
                     ],
                 },
             },
-        ]
+        ],
+        ALLOWED_HOSTS=['*'],
+
     )
 
 
 def runtests():
-    argv = sys.argv[:1] + ['test'] + sys.argv[1:]
+    # import pdb; pdb.set_trace()
+    # argv = sys.argv[:1] + ['runserver'] + sys.argv[1:]
+    if len(sys.argv) == 1:
+        argv = sys.argv[:1] + ['test']
+    else:
+        argv = sys.argv
     execute_from_command_line(argv)
+
 
 if __name__ == '__main__':
     runtests()

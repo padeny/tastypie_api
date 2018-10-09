@@ -1,5 +1,5 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
 
 def atest(request):
-    pass
+    return HttpResponse('aksjkf')

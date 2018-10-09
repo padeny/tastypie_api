@@ -1,6 +1,5 @@
 import json
 from django.http import HttpResponse
-
 """
 自定义response数据格式
 The various HTTP responses for use in returning proper HTTP codes.
@@ -8,10 +7,7 @@ The various HTTP responses for use in returning proper HTTP codes.
 
 SUCCESS = 0
 FAILED = 1
-DEFAULT_MSG = {
-    SUCCESS: 'SUCCESS',
-    FAILED: 'FAILED'
-}
+DEFAULT_MSG = {SUCCESS: 'SUCCESS', FAILED: 'FAILED', 404: "未找到", 401: "未认证", 403: "没有权限", 405: "不被允许的请求方法"}
 
 
 class Result(HttpResponse):
@@ -24,17 +20,12 @@ class Result(HttpResponse):
     def __init__(self, data={}, msg=None, status=None, meta={}, content_type='application/json'):
 
         status_code = status or self.res_code
-        msg = msg or DEFAULT_MSG[status_code]
 
-        wrapped_data = {
-            'status_code': status_code,
-            'msg': msg,
-            'meta': meta,
-            'data': data
-        }
+        msg = msg or DEFAULT_MSG.get(status_code, DEFAULT_MSG[FAILED])
+
+        wrapped_data = {'status_code': status_code, 'msg': msg, 'meta': meta, 'data': data}
         wrapped_data = json.dumps(wrapped_data)
-        super(Result, self).__init__(wrapped_data,
-                                     content_type=content_type)
+        super(Result, self).__init__(wrapped_data, content_type=content_type)
 
 
 class FailedResult(Result):
@@ -44,8 +35,8 @@ class FailedResult(Result):
     res_code = FAILED
 
 
-class HttpCreated(HttpResponse):
-    res_code = 201
+class HttpCreated(Result):
+    res_code = SUCCESS
 
     def __init__(self, *args, **kwargs):
         location = kwargs.pop('location', '')
@@ -54,12 +45,12 @@ class HttpCreated(HttpResponse):
         self['Location'] = location
 
 
-class HttpAccepted(HttpResponse):
-    res_code = 202
+class HttpAccepted(Result):
+    res_code = SUCCESS
 
 
-class HttpNoContent(HttpResponse):
-    res_code = 204
+class HttpNoContent(Result):
+    res_code = SUCCESS
 
     def __init__(self, *args, **kwargs):
         super(HttpNoContent, self).__init__(*args, **kwargs)
@@ -67,15 +58,15 @@ class HttpNoContent(HttpResponse):
 
 
 class HttpMultipleChoices(HttpResponse):
-    res_code = 300
+    status_code = 300
 
 
 class HttpSeeOther(HttpResponse):
-    res_code = 303
+    status_code = 303
 
 
 class HttpNotModified(HttpResponse):
-    res_code = 304
+    status_code = 304
 
 
 class HttpBadRequest(FailedResult):
@@ -98,6 +89,10 @@ class HttpMethodNotAllowed(FailedResult):
     res_code = 405
 
 
+class HttpNotAcceptable(FailedResult):
+    res_code = 406
+
+
 class HttpConflict(FailedResult):
     res_code = 409
 
@@ -106,7 +101,11 @@ class HttpGone(FailedResult):
     res_code = 410
 
 
-class HttpUnprocessableEntity(FailedResult):
+class HttpUnsupportedMediaType(FailedResult):
+    res_code = 415
+
+
+class HttpUnprocessableEntity(HttpResponse):
     res_code = 422
 
 
@@ -114,9 +113,9 @@ class HttpTooManyRequests(FailedResult):
     res_code = 429
 
 
-class HttpApplicationError(FailedResult):
-    res_code = 500
+class HttpApplicationError(HttpResponse):
+    status_code = 500
 
 
-class HttpNotImplemented(FailedResult):
-    res_code = 501
+class HttpNotImplemented(HttpResponse):
+    status_code = 501
