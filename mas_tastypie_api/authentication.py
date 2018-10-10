@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 
-from tastypie.authentication import SessionAuthentication as SessAuth, BasicAuthentication as BasicAuth
+from tastypie.authentication import SessionAuthentication as SessAuth
 from tastypie.compat import is_authenticated
 
 from mas_tastypie_api.http import FailedResult

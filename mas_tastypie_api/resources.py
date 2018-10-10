@@ -5,39 +5,29 @@ from tastypie.resources import Resource, DeclarativeMetaclass, BaseModelResource
 
 from django.core.exceptions import (
     ObjectDoesNotExist,
-    MultipleObjectsReturned,
     ValidationError,
 )
 from django.conf import settings
 from django.utils import six
-from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.http import HttpResponse, Http404
 from django.utils.cache import patch_cache_control, patch_vary_headers
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
 
-from tastypie.utils.mime import determine_format, build_content_type
 from tastypie import fields
-from tastypie.resources import ResourceOptions as TResourceOptions
 from tastypie.exceptions import (
     NotFound,
     BadRequest,
-    InvalidFilterError,
-    HydrationError,
-    InvalidSortError,
-    ImmediateHttpResponse,
-    Unauthorized,
     UnsupportedFormat,
     UnsupportedSerializationFormat,
     UnsupportedDeserializationFormat,
 )
-from tastypie.compat import NoReverseMatch, reverse, Resolver404, get_script_prefix
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.compat import reverse
 from tastypie import http as t_http
 
 from mas_tastypie_api import http
 from mas_tastypie_api.http import FailedResult, Result
 from mas_tastypie_api.exceptions import DataFormatError
-from mas_tastypie_api.serializers import Serializer
 
 
 def sanitize(text):
@@ -186,7 +176,7 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
         """
             自定义输出格式
         """
-        #import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
         serialized = self.serialize(request, data, "application/json")
         deserialized = json.loads(serialized)
         if self._meta.collection_name in deserialized and \

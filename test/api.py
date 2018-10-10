@@ -1,12 +1,11 @@
 from tastypie.authorization import Authorization
 # from tastypie.resources import ModelResource
 
-from mas_tastypie_api.authentication import SessionAuthentication
+from mas_tastypie_api.authentication import SessionAuthentication  # noqa
 
-from mas_tastypie_api import http
-from mas_tastypie_api.http import Result, FailedResult
-from mas_tastypie_api.resources import ModelResource
-from mas_tastypie_api.exceptions import DataFormatError
+from mas_tastypie_api.http import Result, FailedResult  # noqa
+from mas_tastypie_api.resources import ModelResource  # noqa
+from mas_tastypie_api.exceptions import DataFormatError  # noqa
 
 from .models import Article
 
