@@ -1,6 +1,6 @@
 [![coverage report](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/badges/master/coverage.svg)](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/commits/master)
 [![pipeline status](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/badges/master/pipeline.svg)](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/commits/master)
-![](https://img.shields.io/badge/python-3.6-brightgreen.svg)
+[![](https://img.shields.io/badge/python-3.6-brightgreen.svg)]()
 
 
 Mas Tastypie Api Framework
