@@ -5,41 +5,10 @@ from tastypie.authentication import BasicAuthentication, SessionAuthentication  
 from tastypie.resources import fields
 from tastypie.resources import ModelResource as t_ModelResource  # noqa
 
-from mas_tastypie_api.http import Result, FailedResult  # noqa
 from mas_tastypie_api.resources import ModelResource  # noqa
-from mas_tastypie_api.exceptions import DataFormatError  # noqa
 from mas_tastypie_api.paginator import Paginator
 
-from .models import Author, Article, Entry
-
-
-class AuthorReousrce(ModelResource):
-    class Meta:
-        queryset = Author.objects.all()
-        resource_name = 'authors'
-        class_name = Author
-        # include_resource_uri = False
-        always_return_data = True
-        authorization = Authorization()
-        authentication = BasicAuthentication()
-
-
-class ArticleResource(ModelResource):
-    author = fields.ForeignKey(to=AuthorReousrce, attribute='author')
-
-    class Meta:
-        queryset = Article.objects.all()
-        resource_name = 'articles'
-        class_name = Article
-        # include_resource_uri = False
-        always_return_data = True
-        fields = ['title', 'author']
-        authorization = Authorization()
-        authentication = BasicAuthentication()
-
-    # def get_list(self, request, **kwargs):
-    #     print("das")
-    #     return super(ArticleResource, self).get_list(request, **kwargs)
+from .models import Entry
 
 
 class UserResource(ModelResource):

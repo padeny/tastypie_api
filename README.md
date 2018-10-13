@@ -16,6 +16,7 @@ Mas Tastypie Api Framework
  
 ## Tips
  - 前后端分离Django csrftoken的获取
+ 
  > 内网项目可直接关闭 csrf 验证
 
  参考[stackoverflow](https://stackoverflow.com/questions/15388694/does-sessionauthentication-work-in-tastypie-for-http-post)

@@ -135,3 +135,20 @@ class EntryResourceTest(ResourceTestCaseMixin, TestCase):
         # Scope out the data for correctness.
         self.assertEqual(len(self.deserialize(resp)['data']), 2)
         self.assertEqual(self.deserialize(resp)['meta']['previous'], None)
+
+        resp1 = self.api_client.get(
+            '/api/v1/entries/?limit=0&page_num=1', format='json', authentication=self.get_credentials())
+        self.assertValidCustomeResponse(resp1)
+        # Scope out the data for correctness.
+        self.assertEqual(len(self.deserialize(resp1)['data']), 5)
+        self.assertEqual(self.deserialize(resp1)['meta']['previous'], None)
+
+    def test_paginator_exception(self):
+        resp1 = self.api_client.get(
+            '/api/v1/entries/?limit=2&page_num=aa', format='json', authentication=self.get_credentials())
+        resp2 = self.api_client.get(
+            '/api/v1/entries/?limit=2&page_num=-1', format='json', authentication=self.get_credentials())
+        self.assertValidCustomeResponse(resp1)
+        self.assertResponseStatusCode(resp1, http.FAILED)
+        self.assertValidCustomeResponse(resp2)
+        self.assertResponseStatusCode(resp2, http.FAILED)
