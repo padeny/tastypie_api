@@ -8,6 +8,7 @@ from tastypie.resources import ModelResource as t_ModelResource  # noqa
 from mas_tastypie_api.http import Result, FailedResult  # noqa
 from mas_tastypie_api.resources import ModelResource  # noqa
 from mas_tastypie_api.exceptions import DataFormatError  # noqa
+from mas_tastypie_api.paginator import Paginator
 
 from .models import Author, Article, Entry
 
@@ -57,8 +58,9 @@ class EntryResource(ModelResource):
         queryset = Entry.objects.all()
         include_resource_uri = False
         fields = ['created', 'slug', 'title', 'user', 'image']
+        paginator_class = Paginator
         authorization = Authorization()
-        # authentication = BasicAuthentication()
+        authentication = BasicAuthentication()
         # authentication = SessionAuthentication()
 
     # def get_list(self, request, **kwargs):

@@ -1,5 +1,5 @@
 [flake8]
-#ignore = C901,E402,W,E501
+ignore = E501
 exclude =
     *.pyc,
     .git,

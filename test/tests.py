@@ -127,3 +127,11 @@ class EntryResourceTest(ResourceTestCaseMixin, TestCase):
         self.assertValidCustomeResponse(resp)
         self.assertResponseStatusCode(resp, http.HttpAccepted.res_code)
         self.assertEqual(Entry.objects.count(), 4)
+
+    def test_paginator(self):
+        resp = self.api_client.get(
+            '/api/v1/entries/?limit=2&page_num=1', format='json', authentication=self.get_credentials())
+        self.assertValidCustomeResponse(resp)
+        # Scope out the data for correctness.
+        self.assertEqual(len(self.deserialize(resp)['data']), 2)
+        self.assertEqual(self.deserialize(resp)['meta']['previous'], None)

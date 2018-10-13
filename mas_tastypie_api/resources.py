@@ -196,3 +196,5 @@ class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResou
         """
         namespaced = "%s:%s" % (self._meta.urlconf_namespace, name)
         return reverse(namespaced, args=args, kwargs=kwargs)
+
+    # pass
