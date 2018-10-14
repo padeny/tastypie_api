@@ -1,6 +1,5 @@
 import json
 import inspect
-from copy import copy, deepcopy
 from django.db.utils import IntegrityError
 
 from tastypie.resources import Resource as t_Resource, BaseModelResource as t_BaseModelResource
@@ -26,8 +25,8 @@ from tastypie.exceptions import (
 )
 from tastypie.compat import reverse
 from tastypie import http as t_http
-from tastypie.resources import (ResourceOptions as t_ResourceOptions, DeclarativeMetaclass as t_DeclarativeMetaclass,
-                                ModelDeclarativeMetaclass as t_ModelDeclarativeMetaclass)
+from tastypie.resources import (DeclarativeMetaclass as t_DeclarativeMetaclass, ModelDeclarativeMetaclass as
+                                t_ModelDeclarativeMetaclass)
 
 from mas_tastypie_api import http
 from mas_tastypie_api.paginator import Paginator
