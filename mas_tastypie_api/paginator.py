@@ -10,42 +10,7 @@ from mas_tastypie_api.exceptions import DataFormatError
 
 
 class Paginator(t_Paginator):
-    def __init__(self,
-                 request_data,
-                 objects,
-                 resource_uri=None,
-                 limit=None,
-                 offset=0,
-                 max_limit=1000,
-                 collection_name='objects'):
-        """
-        Instantiates the ``Paginator`` and allows for some configuration.
-
-        The ``request_data`` argument ought to be a dictionary-like object.
-        May provide ``limit`` and/or ``offset`` to override the defaults.
-        Commonly provided ``request.GET``. Required.
-
-        The ``objects`` should be a list-like object of ``Resources``.
-        This is typically a ``QuerySet`` but can be anything that
-        implements slicing. Required.
-
-        Optionally accepts a ``limit`` argument, which specifies how many
-        items to show at a time. Defaults to ``None``, which is no limit.
-
-        Optionally accepts an ``offset`` argument, which specifies where in
-        the ``objects`` to start displaying results from. Defaults to 0.
-
-        Optionally accepts a ``max_limit`` argument, which the upper bound
-        limit. Defaults to ``1000``. If you set it to 0 or ``None``, no upper
-        bound will be enforced.
-        """
-        self.request_data = request_data
-        self.objects = objects
-        self.limit = limit
-        self.max_limit = max_limit
-        self.offset = offset
-        self.resource_uri = resource_uri
-        self.collection_name = collection_name
+    '.keep'
 
     def get_page_num(self):
         """
@@ -65,17 +30,6 @@ class Paginator(t_Paginator):
             raise DataFormatError("Invalid page_num '%s' provided. Please provide a positive integer >= 0." % page_num)
 
         return page_num
-
-    def get_slice(self, limit, page_num=1):
-        """
-        Slices the result set to the specified ``limit`` & ``offset``.
-        """
-        index = max((page_num - 1), 0) * limit
-
-        if limit == 0:
-            return self.objects[index:]
-
-        return self.objects[index:index + limit]
 
     def _page_num_to_offset(self, limit, page_num):
         return max((page_num - 1), 0) * limit
@@ -125,7 +79,7 @@ class Paginator(t_Paginator):
         page_num = self.get_page_num()
         offset = self._page_num_to_offset(limit, page_num)
         count = self.get_count()
-        objects = self.get_slice(limit, page_num=page_num)
+        objects = self.get_slice(limit, offset)
         meta = {
             'limit': limit,
             'page_num': page_num,

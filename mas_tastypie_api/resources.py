@@ -57,7 +57,7 @@ class DeclarativeMetaclass(t_DeclarativeMetaclass):
         return new_class
 
 
-# NOTE 元类继承冲突, 所以父类元类的共同子类
+# NOTE 元类继承冲突, 需是所有父类元类的共同子类
 class ModelDeclarativeMetaclass(t_ModelDeclarativeMetaclass, DeclarativeMetaclass):
     def __new__(cls, name, bases, attrs):
         return super(ModelDeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
