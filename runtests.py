@@ -17,9 +17,9 @@ if not settings.configured:
             'django.contrib.sessions',
             'django.contrib.contenttypes',
             'mas_tastypie_api',
-            'test',
+            'tests',
         ],
-        ROOT_URLCONF="test.urls",
+        ROOT_URLCONF="tests.urls",
         MIDDLEWARE=[
             'django.contrib.sessions.middleware.SessionMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',

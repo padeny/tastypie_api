@@ -4,7 +4,7 @@ from django.test import TestCase
 from tastypie.test import ResourceTestCaseMixin
 
 from mas_tastypie_api import http
-from test.models import Entry
+from tests.models import Entry
 
 
 class EntryResourceTest(ResourceTestCaseMixin, TestCase):

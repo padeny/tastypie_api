@@ -1,7 +1,9 @@
 import json
+import inspect
+from copy import copy, deepcopy
 from django.db.utils import IntegrityError
 
-from tastypie.resources import Resource, DeclarativeMetaclass, BaseModelResource, ModelDeclarativeMetaclass
+from tastypie.resources import Resource as t_Resource, BaseModelResource as t_BaseModelResource
 
 from django.core.exceptions import (
     ObjectDoesNotExist,
@@ -24,8 +26,11 @@ from tastypie.exceptions import (
 )
 from tastypie.compat import reverse
 from tastypie import http as t_http
+from tastypie.resources import (ResourceOptions as t_ResourceOptions, DeclarativeMetaclass as t_DeclarativeMetaclass,
+                                ModelDeclarativeMetaclass as t_ModelDeclarativeMetaclass)
 
 from mas_tastypie_api import http
+from mas_tastypie_api.paginator import Paginator
 from mas_tastypie_api.http import FailedResult, Result
 from mas_tastypie_api.exceptions import DataFormatError
 
@@ -36,19 +41,32 @@ def sanitize(text):
     return escape(text).replace('&#39;', "'").replace('&quot;', '"')
 
 
-class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
-    """
-    #TODO
-    1.checkparam
-    2.check fields which can not be null
-    3.customc urls
-  √ 4.union response-format,e.g Result or FailedResult
-    5.overwrite wrap_view() to return union response-format for some Exception
-    """
+class NewResourceOptions():
+    paginator_class = Paginator
 
-    # class Meta:
-    #     #serializer = Serializer()
-    #     object_class = None
+
+class DeclarativeMetaclass(t_DeclarativeMetaclass):
+    def __new__(cls, name, bases, attrs):
+        new_class = super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
+        new_class._meta.paginator_class = Paginator
+
+        # tastypie resouce.py L157 从父类获取 meta, 所以这里覆写ResourceOptions没有作用
+        for attr, value in inspect.getmembers(NewResourceOptions, lambda a: not (inspect.isroutine(a))):
+            if not attr.startswith("_"):
+                'replace'
+                setattr(new_class._meta, attr, value)
+        return new_class
+
+
+# NOTE 元类继承冲突, 所以父类元类的共同子类
+class ModelDeclarativeMetaclass(t_ModelDeclarativeMetaclass, DeclarativeMetaclass):
+    def __new__(cls, name, bases, attrs):
+        return super(ModelDeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
+
+
+class Resource(six.with_metaclass(DeclarativeMetaclass, t_Resource)):
+    """
+    """
 
     def wrap_view(self, view):
         @csrf_exempt
@@ -129,12 +147,6 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
 
         return http.HttpApplicationError
 
-    def save(self, bundle, skip_errors=False):
-        try:
-            return super(Resource, self).save(bundle, skip_errors=skip_errors)
-        except IntegrityError as e:
-            raise DataFormatError(msg=str(e))
-
     def is_valid(self, bundle):
         """
         Handles checking if the data provided by the user is valid.
@@ -185,8 +197,14 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, Resource)):
         return Result(data=deserialized)
 
 
-class BaseModelResource(BaseModelResource, Resource):
-    pass
+class BaseModelResource(t_BaseModelResource, Resource):
+    ''
+
+    def save(self, bundle, skip_errors=False):
+        try:
+            return super(BaseModelResource, self).save(bundle, skip_errors=skip_errors)
+        except IntegrityError as e:
+            raise DataFormatError(msg=str(e))
 
 
 class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResource)):
@@ -196,5 +214,3 @@ class ModelResource(six.with_metaclass(ModelDeclarativeMetaclass, BaseModelResou
         """
         namespaced = "%s:%s" % (self._meta.urlconf_namespace, name)
         return reverse(namespaced, args=args, kwargs=kwargs)
-
-    # pass

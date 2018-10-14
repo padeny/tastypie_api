@@ -13,6 +13,7 @@ Mas Tastypie Api Framework
  - 集成 `multipart/form-data` FileUpload
  `https://github.com/django-tastypie/django-tastypie/issues/1419`
  - 增加`page_num`分页参数
+ - 可自定义 mas_tastypie_api中Resource的 Meta 属性
  
 ## Tips
  - 前后端分离Django csrftoken的获取
