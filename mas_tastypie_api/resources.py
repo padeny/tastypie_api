@@ -155,7 +155,7 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, t_Resource)):
             allowed = []
 
         request_method = request.method.lower()
-        allows = "allowd methods must is in: " + ','.join([meth.upper() for meth in allowed])
+        allows = "allowd methods must be in: " + ','.join([meth.upper() for meth in allowed])
 
         if request_method == "options":
             response = HttpResponse(allows)
