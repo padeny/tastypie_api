@@ -152,3 +152,29 @@ class EntryResourceTest(ResourceTestCaseMixin, TestCase):
         self.assertResponseStatusCode(resp1, http.FAILED)
         self.assertValidCustomeResponse(resp2)
         self.assertResponseStatusCode(resp2, http.FAILED)
+
+    def test_custom_api_unauthenticated(self):
+        resp1 = self.api_client.get('/api/v1/entries/test_custom_api/', format='json')
+        self.assertValidCustomeResponse(resp1)
+        self.assertHttpUnauthorized(resp1)
+
+        resp2 = self.api_client.get('/api/v1/entries/test_custom_api2/', format='json')
+        self.assertValidCustomeResponse(resp2)
+        self.assertSuccessResponse(resp2)
+
+        resp3 = self.api_client.get('/api/v1/entries/test_custom_api3/', format='json')
+        self.assertValidCustomeResponse(resp3)
+        self.assertSuccessResponse(resp3)
+
+        resp4 = self.api_client.get('/api/v1/entries/test_custom_api4/', format='json')
+        self.assertValidCustomeResponse(resp4)
+        self.assertSuccessResponse(resp4)
+
+    def test_custom_api_request_method(self):
+        resp2 = self.api_client.post('/api/v1/entries/test_custom_api2/', format='json')
+        self.assertValidCustomeResponse(resp2)
+        self.assertResponseStatusCode(resp2, http.HttpMethodNotAllowed.res_code)
+
+        resp3 = self.api_client.post('/api/v1/entries/test_custom_api3/', format='json')
+        self.assertValidCustomeResponse(resp3)
+        self.assertSuccessResponse(resp3)
