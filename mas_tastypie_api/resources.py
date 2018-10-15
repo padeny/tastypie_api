@@ -19,6 +19,7 @@ from tastypie import fields
 from tastypie.exceptions import (
     NotFound,
     BadRequest,
+    ImmediateHttpResponse,
     UnsupportedFormat,
     UnsupportedSerializationFormat,
     UnsupportedDeserializationFormat,
@@ -145,6 +146,28 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, t_Resource)):
             return http.HttpBadRequest
 
         return http.HttpApplicationError
+
+    def method_check(self, request, allowed=None):
+        """
+        补充提示信息
+        """
+        if allowed is None:
+            allowed = []
+
+        request_method = request.method.lower()
+        allows = "allowd methods must is in: " + ','.join([meth.upper() for meth in allowed])
+
+        if request_method == "options":
+            response = HttpResponse(allows)
+            response['Allow'] = allows
+            raise ImmediateHttpResponse(response=response)
+
+        if request_method not in allowed:
+            response = http.HttpMethodNotAllowed(allows)
+            response['Allow'] = allows
+            raise ImmediateHttpResponse(response=response)
+
+        return request_method
 
     def is_valid(self, bundle):
         """
