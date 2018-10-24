@@ -178,3 +178,96 @@ class EntryResourceTest(ResourceTestCaseMixin, TestCase):
         resp3 = self.api_client.post('/api/v1/entries/test_custom_api3/', format='json')
         self.assertValidCustomeResponse(resp3)
         self.assertSuccessResponse(resp3)
+
+
+class Entry2ResourceTest(ResourceTestCaseMixin, TestCase):
+    """
+        SessionAuthentication的单元测试, 每个测试方法中先调用下self.setup_session()即可
+    """
+    fixtures = ['test_entries.json']
+
+    def setUp(self):
+        super(Entry2ResourceTest, self).setUp()
+
+        # Create a user.
+        self.username = 'daniel'
+        self.password = 'pass'
+        self.user = User.objects.create_user(self.username, 'daniel@example.com', self.password)
+
+        # Fetch the ``Entry`` object we'll use in testing.
+        # Note that we aren't using PKs because they can change depending
+        # on what other tests are running.
+        self.entry_1 = Entry.objects.get(slug='first-post')
+
+        # We also build a detail URI, since we will be using it all over.
+        # DRY, baby. DRY.
+        self.detail_url = '/api/v1/entries2/{0}/'.format(self.entry_1.pk)
+
+        # The data we'll send on POST requests. Again, because we'll use it
+        # frequently (enough).
+        self.post_data = {
+            'user': '/api/v1/user/{0}/'.format(self.user.pk),
+            'title': 'Sixth Post!',
+            'slug': 'sixth-post',
+            'created': '2012-05-01T22:05:12'
+        }
+
+    def setup_session(self):
+        self.api_client.client.login(username=self.username, password=self.password)
+
+    def assertValidCustomeResponse(self, resp):
+        " validate response format"
+        self.assertValidJSONResponse(resp)
+        self.assertKeys(self.deserialize(resp), ['status_code', 'msg', 'meta', 'data'])
+
+    def assertSuccessResponse(self, resp):
+        self.assertEqual(self.deserialize(resp)['status_code'], http.SUCCESS)
+
+    def assertResponseStatusCode(self, resp, status_code):
+        self.assertEqual(self.deserialize(resp)['status_code'], status_code)
+
+    def assertHttpUnauthorized(self, resp):
+        self.assertEqual(self.deserialize(resp)['status_code'], http.HttpUnauthorized.res_code)
+
+    def test_get_list_unauthenticated(self):
+        resp = self.api_client.get('/api/v1/entries2/', format='json')
+        self.assertValidCustomeResponse(resp)
+        self.assertHttpUnauthorized(resp)
+
+    def test_get_list_json(self):
+        self.setup_session()
+
+        resp = self.api_client.get('/api/v1/entries2/', format='json')
+        self.assertValidCustomeResponse(resp)
+        # Scope out the data for correctness.
+        self.assertEqual(len(self.deserialize(resp)['data']), 5)
+
+    def test_get_detail_unauthenticated(self):
+        resp = self.api_client.get(self.detail_url, format='json')
+        self.assertValidCustomeResponse(resp)
+        self.assertHttpUnauthorized(resp)
+
+    def test_get_detail_json(self):
+        self.setup_session()
+
+        resp = self.api_client.get(self.detail_url, format='json')
+        self.assertValidCustomeResponse(resp)
+        # We use ``assertKeys`` here to just verify the keys, not all the data.
+        self.assertKeys(self.deserialize(resp)['data'], ['created', 'slug', 'title', 'user', 'image'])
+        self.assertEqual(self.deserialize(resp)['data']['title'], 'First Post!')
+
+    def test_post_list_unauthenticated(self):
+        resp = self.api_client.post('/api/v1/entries2/', format='json', data=self.post_data)
+        self.assertValidCustomeResponse(resp)
+        self.assertHttpUnauthorized(resp)
+
+    def test_post_list(self):
+        self.setup_session()
+
+        # Check how many are there first.
+        self.assertEqual(Entry.objects.count(), 5)
+        resp = self.api_client.post(
+            '/api/v1/entries2/', format='json', data=self.post_data)
+        self.assertSuccessResponse(resp)
+        # Verify a new one has been added.
+        self.assertEqual(Entry.objects.count(), 6)
