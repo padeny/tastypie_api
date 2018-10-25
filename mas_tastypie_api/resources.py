@@ -11,6 +11,7 @@ from django.core.exceptions import (
 from django.conf import settings
 from django.utils import six
 from django.http import HttpResponse, Http404
+from django.http.request import QueryDict
 from django.utils.cache import patch_cache_control, patch_vary_headers
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
@@ -73,6 +74,14 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, t_Resource)):
         def wrapper(request, *args, **kwargs):
             try:
                 callback = getattr(self, view)
+                # form-data方式 PATCH 或 PUT 时
+                if request.method in ['PATCH', 'PUT']:
+                    # sets request._body
+                    request.body
+                    # 'reset' the request object's stream
+                    # request.body() re-creates the file-like object anyway
+                    request._read_started = False
+
                 response = callback(request, *args, **kwargs)
 
                 varies = getattr(self._meta.cache, "varies", [])
@@ -217,6 +226,14 @@ class Resource(six.with_metaclass(DeclarativeMetaclass, t_Resource)):
            isinstance(deserialized[self._meta.collection_name], list):
             return Result(meta=deserialized['meta'], data=deserialized[self._meta.collection_name])
         return Result(data=deserialized)
+
+    def update_in_place(self, request, original_bundle, new_data):
+        """
+            支持 from-data PATCH 或 PUT,
+        """
+        if isinstance(new_data, QueryDict):
+            new_data = new_data.dict()
+        return super(Resource, self).update_in_place(request, original_bundle, new_data)
 
 
 class BaseModelResource(t_BaseModelResource, Resource):
