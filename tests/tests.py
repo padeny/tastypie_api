@@ -1,6 +1,8 @@
 import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 from tastypie.test import ResourceTestCaseMixin
 
 from mas_tastypie_api import http
@@ -91,6 +93,48 @@ class EntryResourceTest(ResourceTestCaseMixin, TestCase):
         self.assertSuccessResponse(resp)
         # Verify a new one has been added.
         self.assertEqual(Entry.objects.count(), 6)
+
+    def test_post_form_data(self):
+        # Check how many are there first.
+        image = SimpleUploadedFile("12.png", b"file_content")
+        post_form_data = {"image": image, "created": "2012-05-01T20:06:12", "title": "sasa", "slug": "test"}
+        resp = self.api_client.post(
+            '/api/v1/entries/', data=post_form_data, authentication=self.get_credentials())
+        self.deserialize(resp)
+        self.assertSuccessResponse(resp)
+        # Verify a new one has been added.
+        self.assertEqual(Entry.objects.count(), 6)
+        yy = Entry.objects.get(id=6)
+        self.assertEqual(yy.image.name, image.name)
+
+    def test_patch_detail_form_data(self):
+        # Check how many are there first.
+        self.assertEqual(Entry.objects.count(), 5)
+        image = SimpleUploadedFile("12.png", b"file_content")
+        patch_form_data = {"image": image, "created": "2012-05-01T20:06:12", " slug": "test"}
+        resp = self.api_client.patch(
+            '/api/v1/entries/2/', data=patch_form_data, authentication=self.get_credentials())
+        self.deserialize(resp)
+        self.assertSuccessResponse(resp)
+        # Verify a new one has been added.
+        self.assertEqual(Entry.objects.count(), 5)
+        yy = Entry.objects.get(id=2)
+        self.assertEqual(yy.image.name, image.name)
+        self.assertEqual(yy.title, "Second Post!")
+
+    def test_put_detail_form_data(self):
+        # Check how many are there first.
+        self.assertEqual(Entry.objects.count(), 5)
+        image = SimpleUploadedFile("12.png", b"file_content")
+        put_form_data = {"image": image, "created": "2012-05-01T20:06:12", "title": "sasa"}
+        resp = self.api_client.put(
+            '/api/v1/entries/2/', data=put_form_data, authentication=self.get_credentials())
+        self.deserialize(resp)
+        self.assertSuccessResponse(resp)
+        # Verify a new one has been added.
+        self.assertEqual(Entry.objects.count(), 5)
+        yy = Entry.objects.get(id=2)
+        self.assertEqual(yy.image.name, image.name)
 
     def test_put_detail_unauthenticated(self):
         resp = self.api_client.put(self.detail_url, format='json', data={})
