@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.management import execute_from_command_line
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(BASE_DIR, 'apps'))
 
 if not settings.configured:
     settings.configure(

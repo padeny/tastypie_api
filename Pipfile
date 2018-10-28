@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.doubanio.com/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==2.0.5"
+django-tastypie = "==0.14.1"
+"flake8" = "==3.4.1"
+coverage = "==4.5.1"
+requests = "==2.20.0"
+ipython = "==5.1.0"
+ipdb = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

@@ -52,9 +52,9 @@ class HttpAccepted(Result):
 class HttpNoContent(Result):
     res_code = SUCCESS
 
-    def __init__(self, *args, **kwargs):
-        super(HttpNoContent, self).__init__(*args, **kwargs)
-        del self['Content-Type']
+    # def __init__(self, *args, **kwargs):
+    #     super(HttpNoContent, self).__init__(*args, **kwargs)
+    #     del self['Content-Type']
 
 
 class HttpMultipleChoices(HttpResponse):

@@ -28,6 +28,7 @@ class EntryResource(ModelResource):
         resource_name = "entries"
         queryset = Entry.objects.all()
         include_resource_uri = False
+        limit = 10
         fields = ['created', 'slug', 'title', 'user', 'image']
         # paginator_class = Paginator
         authorization = Authorization()
@@ -74,8 +75,8 @@ class EntryResource(ModelResource):
         data = {"apia": "apia"}
         return Result(data=data)
 
-    # def get_list(self, request, **kwargs):
-    # return super(EntryResource, self).get_list(request, **kwargs)
+    def get_list(self, request, **kwargs):
+        return super(EntryResource, self).get_list(request, **kwargs)
 
     # def post_list(self, request, **kwargs):
     #     import pdb

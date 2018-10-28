@@ -99,7 +99,7 @@ class EntryResourceTest(ResourceTestCaseMixin, TestCase):
         image = SimpleUploadedFile("12.png", b"file_content")
         post_form_data = {"image": image, "created": "2012-05-01T20:06:12", "title": "sasa", "slug": "test"}
         resp = self.api_client.post(
-            '/api/v1/entries/', data=post_form_data, authentication=self.get_credentials())
+            '/api/v1/entries/', data=post_form_data, format='json', authentication=self.get_credentials())
         self.deserialize(resp)
         self.assertSuccessResponse(resp)
         # Verify a new one has been added.
@@ -112,8 +112,7 @@ class EntryResourceTest(ResourceTestCaseMixin, TestCase):
         self.assertEqual(Entry.objects.count(), 5)
         image = SimpleUploadedFile("12.png", b"file_content")
         patch_form_data = {"image": image, "created": "2012-05-01T20:06:12", " slug": "test"}
-        resp = self.api_client.patch(
-            '/api/v1/entries/2/', data=patch_form_data, authentication=self.get_credentials())
+        resp = self.api_client.patch('/api/v1/entries/2/', data=patch_form_data, authentication=self.get_credentials())
         self.deserialize(resp)
         self.assertSuccessResponse(resp)
         # Verify a new one has been added.
