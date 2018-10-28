@@ -74,15 +74,14 @@ data: 字段或者数组, 响应的具体数据
     ```
 
 >
-在需要自定义接口response 时可调用mas_tastypie_api 已封装好的 Result或者 FailedResult, 两者均是对 HttpResponse的封装, 如下实例接口中可根据需要调用
+在需要自定义接口response 时可调用mas_tastypie_api 已封装好的  http.Result或者 http.FailedResult, 两者均是 HttpResponse的子类, 如下实例接口中可根据需要调用
 
 ```python
     ...
 
     def clear_adopters(self, request, **kwargs):
             """
-                当画像更新时，需要视更新情况决定是否清空画像的当前采用者列表，至于视什么情况前端比较清楚，
-                所以提供一个接口，供前端调用
+                当画像更新时，需要视更新情况决定是否清空画像的当前采用者列表，至于视什么情况前端比较清楚，所以提供一个接口，供前端调用
             """
             self.is_authenticated(request)
             self.method_check(request, allowed=['patch'])
@@ -121,28 +120,17 @@ data: 字段或者数组, 响应的具体数据
 
  对于PATCH or PUT方法做了如下处理:
 
-```
-...
-def wrapper(request, *args, **kwargs):
-        try:
-            callback = getattr(self, view)
+```python
+    def convert_post_to_patch(request):
+        request.body
+        request._read_started = False
+        return convert_post_to_VERB(request, verb='PATCH')
 
-            # form-data方式 PATCH 或 PUT 时
-            if request.method in ['PATCH', 'PUT']:
-                request.body
-                request._read_started = False
 
-            response = callback(request, *args, **kwargs)
-            ...
-```
-```
-def update_in_place(self, request, original_bundle, new_data):
-        """
-            支持 from-data PATCH 或 PUT, 这里的new_data是QueryDict, 而dict.update(QueryDict)的话有问题
-        """
-        if isinstance(new_data, QueryDict):
-            new_data = new_data.dict()
-        return super(Resource, self).update_in_place(request, original_bundle, new_data)
+    def convert_post_to_put(request):
+        request.body
+        request._read_started = False
+        return convert_post_to_VERB(request, verb='PUT')
 ```
 
 #### 增加`page_num`分页参数
