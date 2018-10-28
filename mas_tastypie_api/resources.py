@@ -5,17 +5,14 @@ from django.core.exceptions import (ValidationError)
 from django.conf import settings
 from django.utils import six
 from django.http import HttpResponse
-from django.http.request import QueryDict
 from django.utils.cache import patch_cache_control, patch_vary_headers
-from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
 
 from tastypie import fields
 from tastypie.exceptions import (BadRequest, ImmediateHttpResponse)
 from tastypie.compat import reverse
 from tastypie import resources
-from tastypie.resources import (sanitize, ResourceOptions, DeclarativeMetaclass, ModelDeclarativeMetaclass,
-                                convert_post_to_VERB)
+from tastypie.resources import (sanitize, ResourceOptions, ModelDeclarativeMetaclass, convert_post_to_VERB)
 from tastypie.resources import Resource as t_Resource, BaseModelResource as t_BaseModelResource
 
 from tastypie import authentication
@@ -27,13 +24,15 @@ from mas_tastypie_api.exceptions import DataFormatError
 
 
 def convert_post_to_patch(request):
-    # form-data方式 PATCH 或 PUT 时
-    # sets request._body
     request.body
-    # # 'reset' the request object's stream
-    # # request.body() re-creates the file-like object anyway
     request._read_started = False
     return convert_post_to_VERB(request, verb='PATCH')
+
+
+def convert_post_to_put(request):
+    request.body
+    request._read_started = False
+    return convert_post_to_VERB(request, verb='PUT')
 
 
 class NewResourceOptions(ResourceOptions):
@@ -44,6 +43,7 @@ class NewResourceOptions(ResourceOptions):
 resources.http = http
 authentication.HttpUnauthorized = http.HttpUnauthorized
 resources.convert_post_to_patch = convert_post_to_patch
+resources.convert_post_to_put = convert_post_to_put
 resources.ResourceOptions = NewResourceOptions
 
 
