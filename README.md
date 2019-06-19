@@ -1,6 +1,6 @@
 [![](https://img.shields.io/travis/padeny/tastypie_api.svg?style=flat-square)](https://travis-ci.org/padeny/tastypie_api)
 [![Coverage Status](https://coveralls.io/repos/github/padeny/tastypie_api/badge.svg?branch=master)](https://coveralls.io/github/padeny/tastypie_api?branch=master)
-[![](https://img.shields.io/github/license/padeny/tastypie_api.svg?style=flat-square)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
 Tastypie Api
