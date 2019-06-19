@@ -1,11 +1,14 @@
-Tastypie Api Framework
+Tastypie Api
 =====
 
 对[Tastypie](https://github.com/django-tastypie/django-tastypie)框架做了一些封装
 
+
 ## 封装
 
+
 #### 重定义 Response 格式
+
 
 >
 接口响应字段说明
@@ -90,7 +93,6 @@ data: 字段或者数组, 响应的具体数据
                 return FailedResult(msg='not found')
             if profile.owner != user:
                 return FailedResult(msg='the profile not belongs to current user')
-            # 清空
             profile.adopters.clear()
             return Result(msg="success")
 
@@ -100,7 +102,8 @@ data: 字段或者数组, 响应的具体数据
 
 - POST
 
- tastypie 默认不支持`multipart/form-data`方式创建 model 的 类FileField字段, 关于这个问题gitlab 上有相关的讨论 [issue](`https://github.com/django-tastypie/django-tastypie/issues/1419`),
+ tastypie 默认不支持`multipart/form-data`方式创建 model 的 类FileField字段, 关于这个问题gitlab 上有相关的讨论
+ [issue](https://github.com/django-tastypie/django-tastypie/issues/1419),
  另已有开发者提了 PR, 但一直未被合并, 这里将其集成进来了
 
 - PATCH or PUT
@@ -108,7 +111,7 @@ data: 字段或者数组, 响应的具体数据
  支持以 from-data 的方式更新单个资源, 默认会报错
 `django.http.request.RawPostDataException: You cannot access body after reading from request's data stream`
 
-原因参考 `https://github.com/django-tastypie/django-tastypie/issues/42#issuecomment-6071991`
+原因参考 (https://github.com/django-tastypie/django-tastypie/issues/42#issuecomment-6071991)
 
  对于PATCH or PUT方法做了如下处理:
 
@@ -125,7 +128,7 @@ data: 字段或者数组, 响应的具体数据
         return convert_post_to_VERB(request, verb='PUT')
 ```
 
-#### 增加`page_num`分页参数
+#### 增加`page_num`分页参数
 
 tastypie 默认返回的 meta 字段有
 ```
