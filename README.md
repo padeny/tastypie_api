@@ -1,14 +1,7 @@
-[![coverage report](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/badges/master/coverage.svg)](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/commits/master)
-[![pipeline status](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/badges/master/pipeline.svg)](http://gitlab.mathartsys.com/Paden/mas_tastypie_api/commits/master)
-[![](https://img.shields.io/badge/python-3.6-brightgreen.svg)]()
-[![](https://img.shields.io/badge/django-2.%2B-brightgreen.svg)]()
-[![](https://img.shields.io/badge/django--tastypie-0.14.1-brightgreen.svg)]()
-
-
-Mas Tastypie Api Framework
+Tastypie Api Framework
 =====
 
-对[Tastypie](https://github.com/django-tastypie/django-tastypie)框架做了一些封装, 内部使用
+对[Tastypie](https://github.com/django-tastypie/django-tastypie)框架做了一些封装
 
 ## 封装
 
@@ -74,14 +67,13 @@ data: 字段或者数组, 响应的具体数据
     ```
 
 >
-在需要自定义接口response 时可调用mas_tastypie_api 已封装好的  http.Result或者 http.FailedResult, 两者均是 HttpResponse的子类, 如下实例接口中可根据需要调用
+在需要自定义接口response 时可调用tastypie_api 已封装好的  http.Result或者 http.FailedResult, 两者均是 HttpResponse的子类, 如下实例接口中可根据需要调用
 
 ```python
     ...
 
     def clear_adopters(self, request, **kwargs):
             """
-                当画像更新时，需要视更新情况决定是否清空画像的当前采用者列表，至于视什么情况前端比较清楚，所以提供一个接口，供前端调用
             """
             self.is_authenticated(request)
             self.method_check(request, allowed=['patch'])
@@ -95,12 +87,12 @@ data: 字段或者数组, 响应的具体数据
             try:
                 profile = self.Meta.queryset.get(id=profile_id)
             except ObjectDoesNotExist:
-                return FailedResult(msg='该id的画像不存在')
+                return FailedResult(msg='not found')
             if profile.owner != user:
-                return FailedResult(msg='该id的画像不属于当前用户')
+                return FailedResult(msg='the profile not belongs to current user')
             # 清空
             profile.adopters.clear()
-            return Result(msg="清空成功")
+            return Result(msg="success")
 
 ```
 

@@ -17,7 +17,7 @@ if not settings.configured:
             'django.contrib.auth',
             'django.contrib.sessions',
             'django.contrib.contenttypes',
-            'mas_tastypie_api',
+            'tastypie_api',
             'tests',
         ],
         ROOT_URLCONF="tests.urls",

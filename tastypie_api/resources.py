@@ -17,10 +17,10 @@ from tastypie.resources import Resource as t_Resource, BaseModelResource as t_Ba
 
 from tastypie import authentication
 
-from mas_tastypie_api import http
-from mas_tastypie_api.paginator import Paginator
-from mas_tastypie_api.http import FailedResult, Result
-from mas_tastypie_api.exceptions import DataFormatError
+from tastypie_api import http
+from tastypie_api.paginator import Paginator
+from tastypie_api.http import FailedResult, Result
+from tastypie_api.exceptions import DataFormatError
 
 
 def convert_post_to_patch(request):

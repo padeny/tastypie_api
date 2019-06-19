@@ -6,9 +6,9 @@ from tastypie.resources import fields
 from tastypie.utils import trailing_slash
 from tastypie.resources import ModelResource as t_ModelResource  # noqa
 
-from mas_tastypie_api.decorators import custom_api
-from mas_tastypie_api.resources import ModelResource  # noqa
-from mas_tastypie_api.http import Result
+from tastypie_api.decorators import custom_api
+from tastypie_api.resources import ModelResource  # noqa
+from tastypie_api.http import Result
 
 from .models import Entry
 

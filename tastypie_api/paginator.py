@@ -6,7 +6,7 @@ except ImportError:
 
 from tastypie.paginator import Paginator as t_Paginator
 
-from mas_tastypie_api.exceptions import DataFormatError
+from tastypie_api.exceptions import DataFormatError
 
 
 class Paginator(t_Paginator):

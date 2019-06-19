@@ -5,7 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from tastypie.test import ResourceTestCaseMixin
 
-from mas_tastypie_api import http
+from tastypie_api import http
 from tests.models import Entry
 
 

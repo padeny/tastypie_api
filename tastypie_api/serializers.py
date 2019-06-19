@@ -1,6 +1,6 @@
 # from tastypie.serializers import Serializer as TSerializer
 
-# from mas_tastypie_api.http import Result
+# from tastypie_api.http import Result
 
 # class Serializer(TSerializer):
 #     """
