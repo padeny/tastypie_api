@@ -106,7 +106,7 @@ class Resource(t_Resource):
 
     def method_check(self, request, allowed=None):
         """
-        补充提示信息
+        add prompt messages
         """
         if allowed is None:
             allowed = []
@@ -127,7 +127,7 @@ class Resource(t_Resource):
         return request_method
 
     def deserialize(self, request, data, format=None):
-        "支持uploadfile"
+        "support for uploadfile"
         format = format.split(';')[0] if format else request.META.get('CONTENT_TYPE', 'application/json')
 
         if format == 'application/x-www-form-urlencoded':
@@ -145,7 +145,7 @@ class Resource(t_Resource):
 
     def create_response(self, request, data, **kwargs):
         """
-            自定义输出格式
+            redefine response format
         """
         serialized = self.serialize(request, data, "application/json")
         deserialized = json.loads(serialized)

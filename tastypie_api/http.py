@@ -1,20 +1,13 @@
 import json
 from django.http import HttpResponse
-"""
-自定义response数据格式
-The various HTTP responses for use in returning proper HTTP codes.
-"""
+
 
 SUCCESS = 0
 FAILED = 1
-DEFAULT_MSG = {SUCCESS: 'SUCCESS', FAILED: 'FAILED', 404: "未找到", 401: "未认证", 403: "没有权限", 405: "不被允许的请求方法"}
+DEFAULT_MSG = {SUCCESS: 'SUCCESS', FAILED: 'FAILED', 404: "Not found", 401: "Unauthorized", 403: "No permisson", 405: "Method not be permitted"}
 
 
 class Result(HttpResponse):
-    """
-    对返回的数据进行封装，返回码res_code --> 0:SUCCESS, 1:FAILED
-    """
-    # 这里如果命名为status_code会直接影响到响应的状态码
     res_code = SUCCESS
 
     def __init__(self, data={}, msg=None, status=None, meta={}, content_type='application/json'):
@@ -29,9 +22,6 @@ class Result(HttpResponse):
 
 
 class FailedResult(Result):
-    """
-    所有预期的异常结果由此函数返回，传递错误信息msg即可
-    """
     res_code = FAILED
 
 
@@ -51,10 +41,6 @@ class HttpAccepted(Result):
 
 class HttpNoContent(Result):
     res_code = SUCCESS
-
-    # def __init__(self, *args, **kwargs):
-    #     super(HttpNoContent, self).__init__(*args, **kwargs)
-    #     del self['Content-Type']
 
 
 class HttpMultipleChoices(HttpResponse):

@@ -10,7 +10,6 @@ from tastypie_api.exceptions import DataFormatError
 
 
 class Paginator(t_Paginator):
-    '.keep'
 
     def get_page_num(self):
         """
