@@ -69,7 +69,7 @@ data: 字段或者数组, 响应的具体数据
 
 >
 在需要自定义接口response 时可调用tastypie_api 已封装好的  http.Result或者 http.FailedResult, 两者均是 HttpResponse
-的子类, 如下实例接口中可根据需要调用
+的子类, 如下实例接口中可根据需要调用
 
 ```python
     ...
@@ -153,7 +153,7 @@ tastypie 默认返回的 meta 字段有
 
 - 上滑加载更多
 
-    这种方式可根据接口返回数据中的 meta 中的`next`直接获取
+    这种方式可根据接口返回数据中的 meta 中的`next`直接获取
 
 - 显示页码列表
 
