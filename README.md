@@ -4,11 +4,9 @@ Tastypie Api
 对[Tastypie](https://github.com/django-tastypie/django-tastypie)框架做了一些封装
 
 
-## 封装
-
+## 封装
 
 #### 重定义 Response 格式
-
 
 >
 接口响应字段说明
@@ -58,7 +56,7 @@ data: 字段或者数组, 响应的具体数据
         }
     ```
 
-- Unauthenticated  [/api/v1/entries/?limit=20]
+  - Unauthenticated  [/api/v1/entries/?limit=20]
 
     ```
         {
@@ -70,7 +68,8 @@ data: 字段或者数组, 响应的具体数据
     ```
 
 >
-在需要自定义接口response 时可调用tastypie_api 已封装好的  http.Result或者 http.FailedResult, 两者均是 HttpResponse的子类, 如下实例接口中可根据需要调用
+在需要自定义接口response 时可调用tastypie_api 已封装好的  http.Result或者 http.FailedResult, 两者均是 HttpResponse
+的子类, 如下实例接口中可根据需要调用
 
 ```python
     ...
@@ -102,9 +101,8 @@ data: 字段或者数组, 响应的具体数据
 
 - POST
 
- tastypie 默认不支持`multipart/form-data`方式创建 model 的 类FileField字段, 关于这个问题gitlab 上有相关的讨论
- [issue](https://github.com/django-tastypie/django-tastypie/issues/1419),
- 另已有开发者提了 PR, 但一直未被合并, 这里将其集成进来了
+ tastypie 默认不支持`multipart/form-data`方式创建 model 的 类FileField字段, 关于这个问题gitlab 上有相关的讨论
+ [issue](https://github.com/django-tastypie/django-tastypie/issues/1419),另已有开发者提了 PR, 但一直未被合并, 这里将其集成进来了
 
 - PATCH or PUT
 
@@ -140,22 +138,26 @@ tastypie 默认返回的 meta 字段有
         "total_count": 5
     }
 ```
-`limit`:  每页的数据条数
+`limit`: 每页的数据条数
+
 `offset`: 当前页第一条数据的位置
-`next`:   下一页的 uri
+
+`next`: 下一页的 uri
+
 `previous`: 上一页的 uri
-`total_count`: 接口返回的数据总数
+
+`total_count`: 接口返回的数据总数
 
 
 常见的两种分页方式:
 
-- 上滑加载更多
-
-    这种方式可根据接口返回数据中的 meta 中的`next`直接获取
+- 上滑加载更多
 
-- 显示页码列表
+    这种方式可根据接口返回数据中的 meta 中的`next`直接获取
 
-    这种情况下总的页数 可以根据 total_count/limit 计算得到; 但如果访问指定页时, 每次都需要重新计算 `offset=(page_num - 1) * limit`
+- 显示页码列表
+
+    这种情况下总的页数 可以根据 total_count/limit 计算得到; 但如果访问指定页时, 每次都需要重新计算 `offset=(page_num - 1) * limit`
 
 因此, 覆写了 tastypie 的 paginator 中部分方法, 以 `page_num` 代替 `offset`, 表示当前页的页码;
 如查询第二页
@@ -226,4 +228,4 @@ tastypie 默认返回的 meta 字段有
 ```
 
 ## TODO
-补充Qucik Start
+补充Qucik Start
