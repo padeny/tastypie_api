@@ -9,8 +9,6 @@ Tastypie Api
 对[Tastypie](https://github.com/django-tastypie/django-tastypie)框架做了一些封装
 
 
-## 封装
-
 #### 重定义 Response 格式
 
 >
