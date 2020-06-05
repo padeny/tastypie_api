@@ -1,4 +1,4 @@
-Django==2.0.5
+Django==2.2.13
 django-tastypie==0.14.1
 flake8==3.4.1
 coverage==4.5.1
